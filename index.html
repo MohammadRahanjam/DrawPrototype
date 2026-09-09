@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rock Paper Scissors Clash – POC</title>
+    <link href="files/rps-style.css" rel="stylesheet" />
+</head>
+
+<body>
+    <!-- Tutorial Overlay -->
+    <div id="tutorialOverlay" class="tutorial-overlay">
+        <div class="tutorial-card">
+            <div class="tutorial-header">
+              
+                <h2 class="tutorial-title">How to Play</h2>  <span class="tutorial-emoji">✊✋✌️</span>
+            </div>
+            <p class="tutorial-intro">Every round, <strong>all players play against one dealer throw</strong>. Pick your hand, then see if you beat the dealer.</p>
+
+            <div class="tutorial-section">
+                <h3>Playing a Round</h3>
+                <ol class="tutorial-steps">
+                    <li>Pick <strong>✊ Rock</strong>, <strong>✋ Paper</strong>, or <strong>✌️ Scissors</strong> — your bet places instantly.</li>
+                    <li>Watch the timer — when it ends, the dealer reveals one hand for everyone.</li>
+                    <li>Beat the dealer's hand to win the round.</li>
+                </ol>
+            </div>
+
+<hr/>
+<br/>
+            <div class="tutorial-section">
+                <h3>Reading the Screen</h3>
+                <ul class="tutorial-ui">
+                    <li><strong>Dealer row:</strong> the dealer's next and past moves.</li>
+                    <li><strong>Player row:</strong> ❓is your next move, and your own past moves, lined up under the dealer's so you can compare them round by round.</li>
+                    <li><strong>Heatmap (% bar):</strong> what other players are betting on right now.</li>
+                    <li><strong>Players list:</strong> shows other players Activities. </li>
+                    <li><strong>Auto Bet</strong> plays hands-free for you.</li>
+                </ul>
+            </div>
+
+            <button type="button" class="tutorial-dismiss" id="tutorialDismissBtn">Got it — Let's Play!</button>
+        </div>
+    </div>
+
+    <div id="game">
+        <div class="col col-left">
+            <!-- Header -->
+            <div id="header">
+                <div class="header-balance">
+                    <span class="balance-label">Balance:</span>
+                    <span class="balance-value" id="balanceValue">1000.00</span>
+                </div>
+                <div class="game-name">✊ RPS Clash</div>
+            </div>
+
+            <!-- Move Display Area -->
+            <div id="moveDisplay">
+                <div class="label" id="displayLabel">PLACE YOUR BETS</div>
+
+                <div id="historyTable">
+                    <div class="history-row-pair">
+                        <span class="row-tag">DEALER</span>
+                        <div class="history-track" id="dealerHistoryTrack"></div>
+                    </div>
+                    <div class="timer-line-track">
+                        <div class="timer-line-fill" id="timerLineFill"></div>
+                        <span class="timer-line-text" id="timerText">6</span>
+                    </div>
+                    <div class="history-row-pair">
+                        <span class="row-tag">YOU</span>
+                        <div class="history-track" id="playerHistoryTrack"></div>
+                    </div>
+                </div>
+
+                <div id="potDisplay">
+                    <div class="stat">
+                        <div class="stat-label">Players</div>
+                        <div class="stat-value" id="playerCount">0</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">Total Pot</div>
+                        <div class="stat-value">€<span id="potValue">0.00</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bet Panel -->
+            <div id="betPanel">
+                <!-- Rock / Paper / Scissors Choice Buttons (clicking places bet) -->
+                <div class="choice-buttons">
+                    <button type="button" class="choice-btn choice-rock" id="choiceRock">
+                        <span class="choice-emoji">✊</span>
+                        <span class="choice-label">ROCK</span>
+                        <span class="choice-sub"><span class="choice-payout">1.95×</span></span>
+                    </button>
+                    <button type="button" class="choice-btn choice-paper" id="choicePaper">
+                        <span class="choice-emoji">✋</span>
+                        <span class="choice-label">PAPER</span>
+                        <span class="choice-sub"><span class="choice-payout">1.95×</span></span>
+                    </button>
+                    <button type="button" class="choice-btn choice-scissors" id="choiceScissors">
+                        <span class="choice-emoji">✌️</span>
+                        <span class="choice-label">SCISSORS</span>
+                        <span class="choice-sub"><span class="choice-payout">1.95×</span></span>
+                    </button>
+                </div>
+
+                <!-- Live "what others chose" distribution -->
+                <div class="choice-stats" id="choiceStats">
+                    <div class="choice-stats-bar">
+                        <div class="choice-stats-segment seg-rock" id="segRock"></div>
+                        <div class="choice-stats-segment seg-paper" id="segPaper"></div>
+                        <div class="choice-stats-segment seg-scissors" id="segScissors"></div>
+                    </div>
+                    <div class="choice-stats-legend" id="choiceStatsLegend">
+                        <span class="legend-item legend-rock">✊ <span id="pctRock">0%</span></span>
+                        <span class="legend-item legend-paper">✋ <span id="pctPaper">0%</span></span>
+                        <span class="legend-item legend-scissors">✌️ <span id="pctScissors">0%</span></span>
+                    </div>
+                    <div class="choice-stats-placeholder" id="choiceStatsPlaceholder">Place a bet to see what others are picking</div>
+                </div>
+
+                <!-- Bet Amount (below the choices) -->
+                <div class="bet-amount-row">
+                    <div class="input-group">
+                        <label for="betAmount">Bet Amount</label>
+                        <input type="number" id="betAmount" min="1" step="1" value="10" />
+                    </div>
+                    <div class="bet-quick-btns">
+                        <button type="button" class="bet-quick-btn" id="betHalfBtn">÷2</button>
+                        <button type="button" class="bet-quick-btn" id="betDoubleBtn">×2</button>
+                    </div>
+                </div>
+
+                <div class="bet-status" id="betStatus"></div>
+            </div>
+        </div>
+
+        <div class="col col-right">
+            <!-- Player Bet Table -->
+            <div id="playersTableContainer">
+                <div class="table-title">Players</div>
+                <table id="playersTable">
+                    <thead>
+                        <tr>
+                            <th>Player</th>
+                            <th>Bet</th>
+                            <th>Choice</th>
+                            <th>Potential Win</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="playersTableBody">
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Auto Bet Panel -->
+            <div id="autobetPanel">
+                <div class="autobet-section">
+                    <div class="autobet-header">
+                        <span class="autobet-title">Auto Bet</span>
+                        <button type="button" class="autobet-toggle" id="autobetToggle">
+                            <span class="toggle-knob"></span>
+                        </button>
+                    </div>
+                    <div class="autobet-controls">
+                        <div class="input-group">
+                            <label for="autobetRounds">Rounds</label>
+                            <input type="number" id="autobetRounds" min="1" max="100" step="1" value="10" />
+                        </div>
+                        <div class="input-group">
+                            <label for="autobetChoice">Choice</label>
+                            <select class="autobet-select" id="autobetChoice">
+                                <option value="rock">✊ Rock</option>
+                                <option value="paper">✋ Paper</option>
+                                <option value="scissors">✌️ Scissors</option>
+                                <option value="random">🎲 Random</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label for="autobetStopWin">Stop on Win (€)</label>
+                            <input type="number" id="autobetStopWin" min="0" step="1" value="0"
+                                placeholder="0 = off" />
+                        </div>
+                        <div class="input-group">
+                            <label for="autobetStopLoss">Stop on Loss (€)</label>
+                            <input type="number" id="autobetStopLoss" min="0" step="1" value="0"
+                                placeholder="0 = off" />
+                        </div>
+                    </div>
+                    <div class="autobet-on-loss">
+                        <div class="input-group">
+                            <label for="autobetOnLoss">On Loss</label>
+                            <select class="autobet-select" id="autobetOnLoss">
+                                <option value="reset">Reset Bet</option>
+                                <option value="double">Double Bet</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label for="autobetOnWin">On Win</label>
+                            <select class="autobet-select" id="autobetOnWin">
+                                <option value="reset">Reset Bet</option>
+                                <option value="double">Double Bet</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="autobet-status" id="autobetStatus"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Win Toast -->
+    <div id="winToast" class="win-toast hidden">
+        <div class="win-toast-icon">🎉</div>
+        <div class="win-toast-title">YOU WON!</div>
+        <div class="win-toast-detail" id="winToastDetail"></div>
+    </div>
+
+    <script src="files/rps-script.js"></script>
+    <script src="files/rps-autobet.js"></script>
+</body>
+
+</html>
