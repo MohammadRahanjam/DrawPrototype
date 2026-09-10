@@ -7,7 +7,7 @@
 
     // --- Configuration ---
     var CONFIG = {
-        bettingDuration: 6,
+        bettingDuration: 8,
         resultDuration: 4,
         revealDelay: 650,
         revealHoldDuration: 900,
